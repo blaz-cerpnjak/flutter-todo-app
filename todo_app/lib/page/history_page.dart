@@ -30,6 +30,12 @@ class _HistoryPageState extends State<HistoryPage> {
     setState(() => isLoading = false);
   }
 
+  void onDelete(int position) async {
+    Todo todo = todoList[position];
+    TodosDatabase.instance.delete(todo.id!);
+    setState(() => todoList.removeAt(position));
+  }
+
   @override
   Widget build(BuildContext context) => Scaffold(
     appBar: AppBar(
@@ -59,7 +65,9 @@ class _HistoryPageState extends State<HistoryPage> {
           todo: todoList[index],
           isEditable: false,
           onUpdate: () => {},
-          onDelete: () => {},
+          onDelete: () => {
+            onDelete(index)
+          },
         );
       }
     );

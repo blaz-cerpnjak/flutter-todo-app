@@ -63,15 +63,12 @@ class _TodoItemWidgetState extends State<TodoItemWidget> {
               ],
             )
           ),
-          Visibility(
-            visible: widget.isEditable,
-            child: IconButton(
-              onPressed: () => {
-                widget.onDelete()
-              }, 
-              icon: Icon(Icons.close)
-            ),
-          )
+          IconButton(
+            onPressed: () => {
+              widget.onDelete()
+            }, 
+            icon: Icon(Icons.close)
+          ),
         ]
       ),
     );
