@@ -4,11 +4,13 @@ import 'package:todo_app/model/todo.dart';
 class TodoItemWidget extends StatefulWidget {
   final Todo todo;
   bool isChecked = false;
+  final bool isEditable;
   final Function onUpdate;
   final Function onDelete;
 
   TodoItemWidget({
     required this.todo, 
+    required this.isEditable,
     required this.onUpdate, 
     required this.onDelete,
     Key? key}) : super(key: key);
@@ -19,11 +21,19 @@ class TodoItemWidget extends StatefulWidget {
 
 class _TodoItemWidgetState extends State<TodoItemWidget> {
 
+  @override
+  void initState() {
+    widget.isChecked = widget.todo.isCompleted;
+    super.initState();
+  }
+
   void onChecked(bool? value) {
-    setState(() {
-      widget.isChecked = value!; 
-      widget.onUpdate();
-    });
+    if (widget.isEditable) {
+      setState(() {
+        widget.isChecked = value!; 
+        widget.onUpdate();
+      });
+    }
   }
 
   @override
@@ -53,12 +63,15 @@ class _TodoItemWidgetState extends State<TodoItemWidget> {
               ],
             )
           ),
-          IconButton(
-            onPressed: () => {
-              widget.onDelete()
-            }, 
-            icon: Icon(Icons.close)
-          ),
+          Visibility(
+            visible: widget.isEditable,
+            child: IconButton(
+              onPressed: () => {
+                widget.onDelete()
+              }, 
+              icon: Icon(Icons.close)
+            ),
+          )
         ]
       ),
     );

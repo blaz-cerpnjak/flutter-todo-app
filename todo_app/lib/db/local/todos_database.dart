@@ -79,6 +79,20 @@ class TodosDatabase {
     return result.map((json) => Todo.fromJson(json)).toList();
   }
 
+  Future<List<Todo>> readCompletedTodos() async {
+    final db = await instance.database;
+
+    final orderBy = '${TodoFields.inputDate} ASC';
+    final result = await db.query(
+      tableTodos, 
+      where: '${TodoFields.isCompleted} = ?',
+      whereArgs: [1],
+      orderBy: orderBy
+    );
+
+    return result.map((json) => Todo.fromJson(json)).toList();
+  }
+
   Future<int> update(Todo todo) async {
     final db = await instance.database;
 

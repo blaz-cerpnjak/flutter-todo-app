@@ -1,19 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:intl/date_symbol_data_file.dart';
+import 'package:flutter/src/foundation/key.dart';
+import 'package:flutter/src/widgets/framework.dart';
 import 'package:todo_app/db/local/todos_database.dart';
 import 'package:todo_app/model/todo.dart';
 import 'package:todo_app/page/add_todo_page.dart';
-import 'package:todo_app/page/history_page.dart';
 import 'package:todo_app/widget/todo_item_widget.dart';
 
-class HomePage extends StatefulWidget {
-  const HomePage({Key? key}) : super(key: key);
+class HistoryPage extends StatefulWidget {
+  const HistoryPage({Key? key}) : super(key: key);
 
   @override
-  State<HomePage> createState() => _HomePageState();
+  State<HistoryPage> createState() => _HistoryPageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _HistoryPageState extends State<HistoryPage> {
   late List<Todo> todoList;
   bool isLoading = false;
 
@@ -25,40 +25,15 @@ class _HomePageState extends State<HomePage> {
 
   Future setTodoList() async {
     setState(() => isLoading = true);
-    todoList = await TodosDatabase.instance.readAllTodos();
+    todoList = await TodosDatabase.instance.readCompletedTodos();
     debugPrint(todoList.length.toString());
     setState(() => isLoading = false);
-  }
-
-  void onChecked(int position) async {
-    await Future.delayed(const Duration(seconds: 1));
-    Todo todo = todoList[position];
-    todo.isCompleted = true;
-    TodosDatabase.instance.update(todo);
-    setState(() => todoList.removeAt(position));   
-  }
-
-  void onDelete(int position) async {
-    Todo todo = todoList[position];
-    TodosDatabase.instance.delete(todo.id!);
-    setState(() => todoList.removeAt(position));
   }
 
   @override
   Widget build(BuildContext context) => Scaffold(
     appBar: AppBar(
-      title: Text('Home'),
-      actions: [
-        IconButton(
-          onPressed: () => {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => HistoryPage()),
-            ),
-          },
-          icon: Icon(Icons.history_rounded)
-        ),
-      ],
+      title: Text('History'),
     ),
     body: Center(
         child: isLoading 
@@ -82,9 +57,9 @@ class _HomePageState extends State<HomePage> {
       itemBuilder: (BuildContext context, int index) {
         return TodoItemWidget(
           todo: todoList[index],
-          isEditable: true,
-          onUpdate: () => onChecked(index),
-          onDelete: () => onDelete(index),
+          isEditable: false,
+          onUpdate: () => {},
+          onDelete: () => {},
         );
       }
     );
