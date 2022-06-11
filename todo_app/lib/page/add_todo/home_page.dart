@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:todo_app/db/local/todos_database.dart';
 import 'package:todo_app/model/todo.dart';
+import 'package:todo_app/page/add_todo/add_todo_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -17,12 +18,6 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     setTodoList();
-  }
-
-  @override
-  void dispose() {
-    TodosDatabase.instance.close();
-    super.dispose();
   }
 
   Future setTodoList() async {
@@ -43,6 +38,14 @@ class _HomePageState extends State<HomePage> {
         : todoList.isEmpty
           ? Text('No todo items.')
           : buildTodoList(),
+      ),
+    floatingActionButton: FloatingActionButton(
+        onPressed: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => AddTodoPage()),
+            ),
+        tooltip: 'Add Todo',
+        child: const Icon(Icons.add),
       ),
   );
 

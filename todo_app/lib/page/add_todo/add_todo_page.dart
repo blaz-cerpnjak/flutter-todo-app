@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:todo_app/db/local/todos_database.dart';
 import 'package:todo_app/model/todo.dart';
+import 'package:todo_app/page/add_todo/home_page.dart';
 
 class AddTodoPage extends StatefulWidget {
   const AddTodoPage({Key? key}) : super(key: key);
@@ -23,12 +24,12 @@ class _AddTodoPageState extends State<AddTodoPage> {
 
     await TodosDatabase.instance.create(todo);
 
-    final scaffold = ScaffoldMessenger.of(context);
-    scaffold.showSnackBar(
-      SnackBar(
-        content: Text("Task added."),
-        action: SnackBarAction(label: 'CLOSE', onPressed: scaffold.hideCurrentSnackBar),
+    Navigator.pushAndRemoveUntil(
+      context, 
+      MaterialPageRoute(
+        builder: (context) => HomePage()
       ),
+      (route) => false
     );
   }
 
