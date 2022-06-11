@@ -4,6 +4,17 @@ Simple Todo App made using Flutter & Dart.
 
 &nbsp;&nbsp;&nbsp;&nbsp;
 
+## Images
+<p align="left">
+  <img src="empty_list.png" height="500" />&nbsp;&nbsp;&nbsp;&nbsp;
+  <img src="add_task.png" height="500" />
+</p>
+&nbsp;
+<p align="left">
+  <img src="todo_list.png" height="500" />&nbsp;&nbsp;&nbsp;&nbsp;
+  <img src="completed.png" height="500" />
+</p> 
+
 ## Implemented functionality:
 - adding tasks
 - marking tasks as done
