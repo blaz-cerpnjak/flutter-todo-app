@@ -26,11 +26,13 @@ class TodosDatabase {
   Future _createDB(Database db, int version) async {
     final idType = 'INTEGER PRIMARY KEY AUTOINCREMENT';
     final textType = 'TEXT NOT NULL';
+    final isCompletedType = 'INTEGER DEFAULT 0';
 
     await db.execute(
       '''
       CREATE TABLE $tableTodos (
         ${TodoFields.id} $idType,
+        ${TodoFields.isCompleted} $isCompletedType,
         ${TodoFields.inputDate} $textType,
         ${TodoFields.text} $textType
       )
@@ -67,7 +69,12 @@ class TodosDatabase {
     final db = await instance.database;
 
     final orderBy = '${TodoFields.inputDate} ASC';
-    final result = await db.query(tableTodos, orderBy: orderBy);
+    final result = await db.query(
+      tableTodos, 
+      where: '${TodoFields.isCompleted} = ?',
+      whereArgs: [0],
+      orderBy: orderBy
+    );
 
     return result.map((json) => Todo.fromJson(json)).toList();
   }

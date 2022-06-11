@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:intl/date_symbol_data_file.dart';
 import 'package:todo_app/db/local/todos_database.dart';
 import 'package:todo_app/model/todo.dart';
 import 'package:todo_app/page/add_todo_page.dart';
+import 'package:todo_app/widget/todo_item_widget.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -25,6 +27,20 @@ class _HomePageState extends State<HomePage> {
     todoList = await TodosDatabase.instance.readAllTodos();
     debugPrint(todoList.length.toString());
     setState(() => isLoading = false);
+  }
+
+  void onChecked(int position) async {
+    await Future.delayed(const Duration(seconds: 1));
+    Todo todo = todoList[position];
+    todo.isCompleted = true;
+    TodosDatabase.instance.update(todo);
+    setState(() => todoList.removeAt(position));   
+  }
+
+  void onDelete(int position) async {
+    Todo todo = todoList[position];
+    TodosDatabase.instance.delete(todo.id!);
+    setState(() => todoList.removeAt(position));
   }
 
   @override
@@ -52,13 +68,19 @@ class _HomePageState extends State<HomePage> {
   Widget buildTodoList() => ListView.builder(
       itemCount: todoList.length,
       itemBuilder: (BuildContext context, int index) {
-        return Container(
-          height: 50,
-          color: Colors.white,
-          child: Center(
-            child: Text(todoList[index].text)
-          ),
+        return TodoItemWidget(
+          todo: todoList[index],
+          onUpdate: () => onChecked(index),
+          onDelete: () => onDelete(index),
         );
       }
     );
+
+  Widget todoItemWidget(Todo todo) => Container(
+    height: 50,
+    color: Colors.white,
+    child: Center(
+      child: Text(todo.text)
+    ),
+  ); 
 }
