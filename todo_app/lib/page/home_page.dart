@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:todo_app/db/local/todos_database.dart';
 import 'package:todo_app/model/todo.dart';
-import 'package:todo_app/page/add_todo/add_todo_page.dart';
+import 'package:todo_app/page/add_todo_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
