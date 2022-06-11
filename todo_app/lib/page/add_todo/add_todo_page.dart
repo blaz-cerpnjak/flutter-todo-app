@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:todo_app/db/local/todos_database.dart';
 import 'package:todo_app/model/todo.dart';
 
 class AddTodoPage extends StatefulWidget {
@@ -17,8 +18,11 @@ class _AddTodoPageState extends State<AddTodoPage> {
     });
   }
 
-  void addTodoItem(BuildContext context) {
+  void addTodoItem(BuildContext context) async {
     final Todo todo = new Todo(text: text, inputDate: DateTime.now());
+
+    await TodosDatabase.instance.create(todo);
+
     final scaffold = ScaffoldMessenger.of(context);
     scaffold.showSnackBar(
       SnackBar(

@@ -16,22 +16,19 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-  
     setTodoList();
   }
 
   @override
   void dispose() {
     TodosDatabase.instance.close();
-
     super.dispose();
   }
 
   Future setTodoList() async {
     setState(() => isLoading = true);
-
-    this.todoList = await TodosDatabase.instance.readAllTodos();
-
+    todoList = await TodosDatabase.instance.readAllTodos();
+    debugPrint(todoList.length.toString());
     setState(() => isLoading = false);
   }
 
@@ -40,7 +37,16 @@ class _HomePageState extends State<HomePage> {
     appBar: AppBar(
       title: Text('Home'),
     ),
-    body: ListView.builder(
+    body: Center(
+        child: isLoading 
+        ? CircularProgressIndicator()
+        : todoList.isEmpty
+          ? Text('No todo items.')
+          : buildTodoList(),
+      ),
+  );
+
+  Widget buildTodoList() => ListView.builder(
       itemCount: todoList.length,
       itemBuilder: (BuildContext context, int index) {
         return Container(
@@ -50,7 +56,6 @@ class _HomePageState extends State<HomePage> {
             child: Text(todoList[index].text)
           ),
         );
-      },
-    ),
-  );
+      }
+    );
 }
