@@ -18,7 +18,7 @@ class _AddTodoPageState extends State<AddTodoPage> {
   }
 
   void addTodoItem(BuildContext context) {
-    final Todo todo = new Todo(text);
+    final Todo todo = new Todo(text: text, inputDate: DateTime.now());
     final scaffold = ScaffoldMessenger.of(context);
     scaffold.showSnackBar(
       SnackBar(
