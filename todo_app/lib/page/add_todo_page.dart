@@ -43,8 +43,9 @@ class _AddTodoPageState extends State<AddTodoPage> {
          Padding(
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
           child: TextFormField(
+            style: TextStyle(fontSize: 20),
             decoration: const InputDecoration(
-              border: UnderlineInputBorder(),
+              border: InputBorder.none,
               labelText: 'New Task',
             ),
             keyboardType: TextInputType.multiline,
