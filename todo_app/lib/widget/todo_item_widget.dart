@@ -7,10 +7,12 @@ class TodoItemWidget extends StatefulWidget {
   final bool isEditable;
   final Function onUpdate;
   final Function onDelete;
+  final Animation<double> animation;
 
   TodoItemWidget({
     required this.todo, 
     required this.isEditable,
+    required this.animation,
     required this.onUpdate, 
     required this.onDelete,
     Key? key}) : super(key: key);
@@ -37,11 +39,19 @@ class _TodoItemWidgetState extends State<TodoItemWidget> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Card(
+  Widget build(BuildContext context) => SizeTransition(
+    sizeFactor: widget.animation,
+    child: buildItem(),
+  );
+  
+  Widget buildItem() => Card(
       child: Row(
         children: [
           Container(
+            margin: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(12),
+            ),
             child: Checkbox(
               value: widget.isChecked, 
               onChanged: (bool? value) => onChecked(value),
@@ -73,4 +83,3 @@ class _TodoItemWidgetState extends State<TodoItemWidget> {
       ),
     );
   }
-}

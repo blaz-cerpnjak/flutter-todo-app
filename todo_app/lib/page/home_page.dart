@@ -15,6 +15,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   late List<Todo> todoList;
+  final listKey = GlobalKey<AnimatedListState>();
   bool isLoading = false;
 
   @override
@@ -39,9 +40,21 @@ class _HomePageState extends State<HomePage> {
   }
 
   void onDelete(int position) async {
-    Todo todo = todoList[position];
+    final Todo todo = todoList[position];
     TodosDatabase.instance.delete(todo.id!);
-    setState(() => todoList.removeAt(position));
+    //setState(() => todoList.removeAt(position));
+    todoList.removeAt(position);
+    listKey.currentState!.removeItem(
+      position, 
+      (context, animation) => TodoItemWidget(
+          todo: todo, 
+          isEditable: false,
+          animation: animation, 
+          onUpdate: () {}, 
+          onDelete: () {},
+      ),
+      duration: Duration(milliseconds: 200),
+    );
   }
 
   @override
@@ -65,7 +78,7 @@ class _HomePageState extends State<HomePage> {
         ? CircularProgressIndicator()
         : todoList.isEmpty
           ? Text('No todo items.')
-          : buildTodoList(),
+          : buildAnimatedTodoList(),
       ),
     floatingActionButton: FloatingActionButton(
         onPressed: () => Navigator.push(
@@ -77,7 +90,7 @@ class _HomePageState extends State<HomePage> {
       ),
   );
 
-  Widget buildTodoList() => ListView.builder(
+  /*Widget buildTodoList() => ListView.builder(
       itemCount: todoList.length,
       itemBuilder: (BuildContext context, int index) {
         return TodoItemWidget(
@@ -87,5 +100,17 @@ class _HomePageState extends State<HomePage> {
           onDelete: () => onDelete(index),
         );
       }
-    );
+    );*/
+
+  Widget buildAnimatedTodoList() => AnimatedList(
+    key: listKey,
+    initialItemCount: todoList.length,
+    itemBuilder: (context, index, animation) => TodoItemWidget(
+      todo: todoList[index], 
+      isEditable: true, 
+      animation: animation,
+      onUpdate: () => onChecked(index),
+      onDelete: () => onDelete(index),
+    ),
+  );
 }
