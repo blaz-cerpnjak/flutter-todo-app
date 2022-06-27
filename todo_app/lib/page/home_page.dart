@@ -36,13 +36,23 @@ class _HomePageState extends State<HomePage> {
     Todo todo = todoList[position];
     todo.isCompleted = true;
     TodosDatabase.instance.update(todo);
-    setState(() => todoList.removeAt(position));   
+    todoList.removeAt(position);
+    listKey.currentState!.removeItem(
+      position, 
+      (context, animation) => TodoItemWidget(
+          todo: todo, 
+          isEditable: false,
+          animation: animation, 
+          onUpdate: () {}, 
+          onDelete: () {},
+      ),
+      duration: Duration(milliseconds: 200),
+    );
   }
 
   void onDelete(int position) async {
     final Todo todo = todoList[position];
     TodosDatabase.instance.delete(todo.id!);
-    //setState(() => todoList.removeAt(position));
     todoList.removeAt(position);
     listKey.currentState!.removeItem(
       position, 
@@ -89,18 +99,6 @@ class _HomePageState extends State<HomePage> {
         child: const Icon(Icons.add),
       ),
   );
-
-  /*Widget buildTodoList() => ListView.builder(
-      itemCount: todoList.length,
-      itemBuilder: (BuildContext context, int index) {
-        return TodoItemWidget(
-          todo: todoList[index],
-          isEditable: true,
-          onUpdate: () => onChecked(index),
-          onDelete: () => onDelete(index),
-        );
-      }
-    );*/
 
   Widget buildAnimatedTodoList() => AnimatedList(
     key: listKey,
