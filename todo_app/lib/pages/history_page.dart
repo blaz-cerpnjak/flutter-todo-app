@@ -27,6 +27,7 @@ class _HistoryPageState extends State<HistoryPage> {
   Future<void> setTasks() async {
     setState(() => isLoading = true);
     tasks = Hive.box<Task>("tasks").values.toList().cast<Task>();
+    tasks.retainWhere((task) => task.completed);
     setState(() => isLoading = false);
   }
 
@@ -41,7 +42,7 @@ class _HistoryPageState extends State<HistoryPage> {
           isEditable: false,
           animation: animation, 
           onUpdate: () {}, 
-          onDelete: () {},
+          onTap: () {},
       ),
       duration: const Duration(milliseconds: 200),
     );
@@ -49,17 +50,30 @@ class _HistoryPageState extends State<HistoryPage> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(
-      title: Text('History'),
-    ),
+    backgroundColor: Theme.of(context).backgroundColor,
+    appBar: buildAppBar(),
     body: Center(
       child: isLoading 
-      ? CircularProgressIndicator()
+      ? const CircularProgressIndicator()
       : tasks.isEmpty
         ? const Text('No tasks.')
         : buildAnimatedTaskList(tasks),
     ),
   );
+
+  AppBar buildAppBar() {
+    return AppBar(
+      automaticallyImplyLeading: false,
+      backgroundColor: Theme.of(context).backgroundColor,
+      foregroundColor: Theme.of(context).primaryColor,
+      elevation: 0.0,
+      title: Text(
+        'History',
+        style: Theme.of(context).textTheme.subtitle1,
+      ),
+      centerTitle: true,
+    );
+  }
 
   Widget buildAnimatedTaskList(final tasks) => AnimatedList(
     key: listKey,
@@ -69,7 +83,7 @@ class _HistoryPageState extends State<HistoryPage> {
       isEditable: true, 
       animation: animation,
       onUpdate: () => () {},
-      onDelete: () => onDelete(index),
+      onTap: () => () {},
     ),
   );
 }

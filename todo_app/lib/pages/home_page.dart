@@ -4,6 +4,8 @@ import 'package:intl/date_symbol_data_file.dart';
 import 'package:todo_app/models/task_model.dart';
 import 'package:todo_app/pages/add_task_page.dart';
 import 'package:todo_app/pages/history_page.dart';
+import 'package:todo_app/routes/locator.dart';
+import 'package:todo_app/routes/navigation_service.dart';
 import 'package:todo_app/widgets/todo_item_widget.dart';
 
 class HomePage extends StatefulWidget {
@@ -14,8 +16,9 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  late List<Task> tasks;
   final listKey = GlobalKey<AnimatedListState>();
+  final NavigationService _navigationService = locator<NavigationService>();
+  late List<Task> tasks;
   bool isLoading = false;
 
   @override
@@ -27,29 +30,20 @@ class _HomePageState extends State<HomePage> {
   Future setTodoList() async {
     setState(() => isLoading = true);
     tasks = await Hive.box<Task>("tasks").values.toList().cast<Task>();
+    tasks.sort((a, b) { 
+      if (b.completed) {
+        return 1;
+      } else {
+        return -1;
+      } 
+    });
     setState(() => isLoading = false);
   }
 
-  void onChecked(int position) async {
-    await Future.delayed(const Duration(seconds: 1));
-
+  void onChecked(int position) {
     final task = tasks[position];
-    task.completed = true;
-
+    task.completed = !task.completed;
     task.save();
-    tasks.removeAt(position);
-
-    listKey.currentState!.removeItem(
-      position, 
-      (context, animation) => TodoItemWidget(
-          task: task,
-          isEditable: false,
-          animation: animation, 
-          onUpdate: () {}, 
-          onDelete: () {},
-      ),
-      duration: const Duration(milliseconds: 200),
-    );
   }
 
   void onDelete(int position) async {
@@ -65,46 +59,56 @@ class _HomePageState extends State<HomePage> {
           isEditable: false,
           animation: animation, 
           onUpdate: () {}, 
-          onDelete: () {},
+          onTap: () {},
       ),
-      duration: Duration(milliseconds: 200),
+      duration: const Duration(milliseconds: 200),
     );
   }
 
   @override
   Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(
-      title: const Text('Home'),
-      actions: [
-        IconButton(
-          onPressed: () => {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => HistoryPage()),
-            ),
-          },
-          icon: Icon(Icons.history_rounded)
-        ),
-      ],
-    ),
+    backgroundColor: Theme.of(context).backgroundColor,
+    appBar: buildAppBar(),
     body: Center(
         child: isLoading 
-        ? CircularProgressIndicator()
+        ? const CircularProgressIndicator()
         : tasks.isEmpty
-          ? const Text('No tasks.')
+          ? Text(
+              'No tasks.',
+              style: Theme.of(context).textTheme.subtitle2,
+            )
           : buildAnimatedTodoList(tasks),
       ),
   );
 
-  Widget buildAnimatedTodoList(final tasks) => AnimatedList(
-    key: listKey,
-    initialItemCount: tasks.length,
-    itemBuilder: (context, index, animation) => TodoItemWidget(
-      task: tasks[index],
-      isEditable: true, 
-      animation: animation,
-      onUpdate: () => onChecked(index),
-      onDelete: () => onDelete(index),
-    ),
+  AppBar buildAppBar() {
+    return AppBar(
+      automaticallyImplyLeading: false,
+      backgroundColor: Theme.of(context).backgroundColor,
+      foregroundColor: Theme.of(context).primaryColor,
+      elevation: 0.0,
+      title: Text(
+        'Home',
+        style: Theme.of(context).textTheme.subtitle1,
+      ),
+      centerTitle: true,
+    );
+  }
+
+  Widget buildAnimatedTodoList(final tasks) => ValueListenableBuilder(
+    valueListenable: Hive.box<Task>('tasks').listenable(),
+    builder: (context, box, _) {
+      return AnimatedList(
+        key: listKey,
+        initialItemCount: tasks.length,
+        itemBuilder: (context, index, animation) => TodoItemWidget(
+          task: tasks[index],
+          isEditable: true, 
+          animation: animation,
+          onUpdate: () => onChecked(index),
+          onTap: () => _navigationService.navigateTo('/taskInfo', arguments: tasks[index]),
+        )
+      );
+    }
   );
 }

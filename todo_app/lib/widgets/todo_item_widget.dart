@@ -7,7 +7,7 @@ class TodoItemWidget extends StatefulWidget {
   bool isChecked = false;
   final bool isEditable;
   final Function onUpdate;
-  final Function onDelete;
+  final Function() onTap;
   final Animation<double> animation;
 
   TodoItemWidget({
@@ -15,7 +15,7 @@ class TodoItemWidget extends StatefulWidget {
     required this.isEditable,
     required this.animation,
     required this.onUpdate, 
-    required this.onDelete,
+    required this.onTap,
     Key? key}) : super(key: key);
 
   @override
@@ -45,42 +45,42 @@ class _TodoItemWidgetState extends State<TodoItemWidget> {
     child: buildItem(),
   );
   
-  Widget buildItem() => Card(
-      child: Row(
-        children: [
-          Container(
-            margin: const EdgeInsets.all(8),
+  Widget buildItem() => Padding(
+    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+    child: Row(
+      children: [
+        InkWell(
+          onTap: () => widget.onUpdate(),
+          child: Container(
+            width: 20,
+            height: 20,
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(12),
+              color: widget.task.completed ? Colors.blue : Colors.transparent,
+              borderRadius: BorderRadius.circular(6),
+              border: widget.task.completed ? null : Border.all(
+                color: Colors.grey,
+                width: 1.5
+              )
             ),
-            child: Checkbox(
-              value: widget.isChecked, 
-              onChanged: (bool? value) => onChecked(value),
+            child: widget.task.completed 
+              ? const Icon(Icons.check_rounded, color: Colors.white, size: 12)
+              : null,
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.only(left: 15),
+          child: InkWell(
+            onTap: widget.onTap,
+            child: Text(
+              widget.task.title,
+              style: TextStyle(
+                color: widget.task.completed ? Theme.of(context).primaryColor : Colors.grey,
+                fontWeight: widget.task.completed ? FontWeight.w600 : FontWeight.w400,
+              ),
             ),
           ),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  widget.task.title,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
-                  ),
-                ),
-                const SizedBox(height: 5),
-                Text(formatDate(widget.task.created, [dd, '-', mm, '-', yyyy])),
-              ],
-            )
-          ),
-          IconButton(
-            onPressed: () => {
-              widget.onDelete()
-            }, 
-            icon: Icon(Icons.close)
-          ),
-        ]
-      ),
-    );
-  }
+        ),
+      ]
+    ),
+  );
+}

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/src/foundation/key.dart';
-import 'package:flutter/src/widgets/framework.dart';
 import 'package:salomon_bottom_bar/salomon_bottom_bar.dart';
+import 'package:todo_app/routes/navigation_service.dart';
 
+import '../routes/locator.dart';
 import '../routes/route_generator.dart';
 
 class MainPage extends StatefulWidget {
@@ -13,24 +13,25 @@ class MainPage extends StatefulWidget {
 }
 
 class _MainPageState extends State<MainPage> {
-  final _navigatorKey = GlobalKey<NavigatorState>();
+  final NavigationService _navigationService = locator<NavigationService>();
   int _currentIndex = 0;
+  String _currentTitle = 'Home';
 
   void navigateToPage(int index) {
     switch (index) {
       case 0: { 
-        setState(() { _currentIndex = 0; });
-        _navigatorKey.currentState!.pushNamed('/'); 
+        setState(() { _currentIndex = 0; _currentTitle = 'Home'; });
+        _navigationService.navigateTo('/');
         break;
       }
       case 1: { 
-        setState(() { _currentIndex = 1; });
-        _navigatorKey.currentState!.pushNamed('/addTask'); 
+        setState(() { _currentIndex = 1; _currentTitle = 'Add Task'; });
+        _navigationService.navigateTo('/addTask');
         break;
       }
       case 2: {
-        setState(() { _currentIndex = 2; });
-        _navigatorKey.currentState!.pushNamed('/history'); 
+        setState(() { _currentIndex = 2; _currentTitle = 'History'; });
+        _navigationService.navigateTo('/history');
         break;  
       }
     }
@@ -39,8 +40,9 @@ class _MainPageState extends State<MainPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Theme.of(context).backgroundColor,
       body: Navigator(
-        key: _navigatorKey,
+        key: _navigationService.navigatorKey,
         initialRoute: '/',
         onGenerateRoute: RouteGenerator.generateRoute,
       ),

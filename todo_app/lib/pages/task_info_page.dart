@@ -1,53 +1,32 @@
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
-import 'package:hive_flutter/hive_flutter.dart';
-import 'package:todo_app/pages/home_page.dart';
 import '../models/task_model.dart';
 
-class AddTaskPage extends StatefulWidget {
-  const AddTaskPage({Key? key}) : super(key: key);
+class TaskInfoPage extends StatefulWidget {
+  final Task task;
+
+  const TaskInfoPage({Key? key, required this.task}) : super(key: key);
 
   @override
-  State<AddTaskPage> createState() => _AddTaskPageState();
+  State<TaskInfoPage> createState() => _TaskInfoPageState();
 }
 
-class _AddTaskPageState extends State<AddTaskPage> {
+class _TaskInfoPageState extends State<TaskInfoPage> {
   final titleController = TextEditingController();
   final descriptionController = TextEditingController();
 
-  void addTodoItem(BuildContext context) async {
-    final task = Task(
-      title: titleController.text,
-      description: descriptionController.text,
-      created: DateTime.now()
-    );
-
-    Box<Task> tasksBox = Hive.box<Task>('tasks');
-    tasksBox.add(task);
-
-    titleController.text = '';
-    descriptionController.text = '';
-
-    Fluttertoast.showToast(
-        msg: 'Task added.',
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.BOTTOM,
-        timeInSecForIosWeb: 2,
-        backgroundColor: Theme.of(context).primaryColor,
-        textColor: Colors.white,
-        fontSize: 16.0
-    );
+  @override
+  void initState() {
+    super.initState();
+    titleController.text = widget.task.title;
+    descriptionController.text = widget.task.description;
   }
 
   @override
-  Widget build(BuildContext context) => Scaffold(
-    backgroundColor: Theme.of(context).backgroundColor,
-    appBar: buildAppBar(),
-    floatingActionButton: FloatingActionButton(
-      onPressed: () => addTodoItem(context),
-      child: const Icon(Icons.done_rounded),
-    ),
-    body: Padding(
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Theme.of(context).backgroundColor,
+      appBar: buildAppBar(),
+      body: Padding(
       padding: const EdgeInsets.all(10),
       child: Column(
         children: <Widget>[
@@ -57,7 +36,8 @@ class _AddTaskPageState extends State<AddTaskPage> {
             hintStyle: Theme.of(context).textTheme.subtitle1!.copyWith(
               color: Colors.grey,
             ),
-            textStyle: Theme.of(context).textTheme.subtitle1!
+            textStyle: Theme.of(context).textTheme.subtitle1!,
+            maxLines: 1,
           ),
           buildTextField(
             controller: descriptionController, 
@@ -68,12 +48,19 @@ class _AddTaskPageState extends State<AddTaskPage> {
             ),
             textStyle: Theme.of(context).textTheme.bodyText1!.copyWith(
               fontWeight: FontWeight.w400
-            )
+            ),
+            maxLines: null
           ),
         ]
       ),
     ),
-  );
+    floatingActionButton: FloatingActionButton.extended(
+        onPressed: () {},
+        icon: const Icon(Icons.done_rounded),
+        label: const Text('Mark as Done')
+      ),
+    );
+  }
 
   AppBar buildAppBar() {
     return AppBar(
@@ -82,18 +69,17 @@ class _AddTaskPageState extends State<AddTaskPage> {
       foregroundColor: Theme.of(context).primaryColor,
       elevation: 0.0,
       title: Text(
-        'Add Task',
+        'Edit Task',
         style: Theme.of(context).textTheme.subtitle1,
       ),
       centerTitle: true,
     );
   }
-
+  
   Widget buildTextField({
     required TextEditingController controller,
     String hint = '',
-    int minLines = 1,
-    int maxLines = 3,
+    int? maxLines = 1,
     required TextStyle hintStyle,
     required TextStyle textStyle
   }) {
@@ -103,8 +89,10 @@ class _AddTaskPageState extends State<AddTaskPage> {
       decoration: InputDecoration(
         border: InputBorder.none,
         hintText: hint,
-        hintStyle: hintStyle
+        hintStyle: hintStyle,
       ),
+      keyboardType: TextInputType.multiline,
+      maxLines: maxLines,
     );
   }
 }

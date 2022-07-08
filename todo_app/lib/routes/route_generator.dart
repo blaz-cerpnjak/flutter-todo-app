@@ -3,7 +3,9 @@ import 'package:page_transition/page_transition.dart';
 import 'package:todo_app/pages/add_task_page.dart';
 import 'package:todo_app/pages/history_page.dart';
 
+import '../models/task_model.dart';
 import '../pages/home_page.dart';
+import '../pages/task_info_page.dart';
 
 class RouteGenerator {
 
@@ -21,6 +23,13 @@ class RouteGenerator {
       case '/history':
         return PageTransition(child: const HistoryPage(), type: PageTransitionType.fade);
 
+      case '/taskInfo':
+        if (args is Task) {
+          return PageTransition(child: TaskInfoPage(task: args), type: PageTransitionType.bottomToTop);
+        } else {
+          return _errorRoute();
+        }
+
       default: 
         return _errorRoute();
     }
@@ -29,11 +38,8 @@ class RouteGenerator {
 
   static Route<dynamic> _errorRoute() {
     return MaterialPageRoute(builder: (_) {
-      return Scaffold(
-        appBar: AppBar(
-          title: const Text('Oops'),
-        ),
-        body: const Center(
+      return const Scaffold(
+        body: Center(
           child: Text('Oops.. Something went wrong.'),
         ),
       );
