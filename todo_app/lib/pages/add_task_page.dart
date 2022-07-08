@@ -46,6 +46,8 @@ class _AddTaskPageState extends State<AddTaskPage> {
     floatingActionButton: FloatingActionButton(
       onPressed: () => addTodoItem(context),
       child: const Icon(Icons.done_rounded),
+      backgroundColor: Colors.blue,
+      foregroundColor: Colors.white,
     ),
     body: Padding(
       padding: const EdgeInsets.all(10),

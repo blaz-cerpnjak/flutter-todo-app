@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:intl/date_symbol_data_file.dart';
+import 'package:provider/provider.dart';
 import 'package:todo_app/models/task_model.dart';
 import 'package:todo_app/pages/add_task_page.dart';
 import 'package:todo_app/pages/history_page.dart';
 import 'package:todo_app/routes/locator.dart';
 import 'package:todo_app/routes/navigation_service.dart';
 import 'package:todo_app/widgets/todo_item_widget.dart';
+
+import '../theme/theme_manager.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -20,11 +23,13 @@ class _HomePageState extends State<HomePage> {
   final NavigationService _navigationService = locator<NavigationService>();
   late List<Task> tasks;
   bool isLoading = false;
+  bool _isDark = false;
 
   @override
   void initState() {
     super.initState();
     setTodoList();
+    _isDark = context.read<ThemeManager>().themeMode == ThemeMode.dark;
   }
 
   Future setTodoList() async {
@@ -92,6 +97,21 @@ class _HomePageState extends State<HomePage> {
         style: Theme.of(context).textTheme.subtitle1,
       ),
       centerTitle: true,
+      actions: [
+        IconButton(
+          onPressed: () { 
+            context.read<ThemeManager>().toggleTheme(_isDark);
+            if (context.read<ThemeManager>().themeMode == ThemeMode.dark) {
+              context.read<ThemeManager>().toggleTheme(false);
+              _isDark = false;
+            } else {
+              context.read<ThemeManager>().toggleTheme(true);
+              _isDark = true;
+            }
+          },
+          icon: _isDark ? const Icon(Icons.light_mode_rounded) : const Icon(Icons.dark_mode_rounded)
+        ),
+      ],
     );
   }
 

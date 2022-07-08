@@ -43,7 +43,7 @@ class _TaskInfoPageState extends State<TaskInfoPage> {
 
   void onDelete() {
     widget.task.delete();
-
+    _navigationService.navigateTo('/');
   }
 
   @override
@@ -82,7 +82,9 @@ class _TaskInfoPageState extends State<TaskInfoPage> {
     floatingActionButton: FloatingActionButton.extended(
         onPressed: onSave,
         icon: const Icon(Icons.edit_rounded),
-        label: const Text('Save')
+        label: const Text('Save'),
+        backgroundColor: Colors.blue,
+        foregroundColor: Colors.white,
       ),
     );
   }
