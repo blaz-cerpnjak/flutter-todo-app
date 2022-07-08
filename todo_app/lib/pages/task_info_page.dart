@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:todo_app/routes/locator.dart';
+import 'package:todo_app/routes/navigation_service.dart';
 import '../models/task_model.dart';
 
 class TaskInfoPage extends StatefulWidget {
@@ -11,14 +14,36 @@ class TaskInfoPage extends StatefulWidget {
 }
 
 class _TaskInfoPageState extends State<TaskInfoPage> {
-  final titleController = TextEditingController();
-  final descriptionController = TextEditingController();
+  final NavigationService _navigationService = locator<NavigationService>();
+  final _titleController = TextEditingController();
+  final _descriptionController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    titleController.text = widget.task.title;
-    descriptionController.text = widget.task.description;
+    _titleController.text = widget.task.title;
+    _descriptionController.text = widget.task.description;
+  }
+
+  void onSave() {
+    widget.task.title = _titleController.text;
+    widget.task.description = _descriptionController.text;
+    widget.task.save();
+
+    Fluttertoast.showToast(
+      msg: 'Task saved.',
+      toastLength: Toast.LENGTH_SHORT,
+      gravity: ToastGravity.BOTTOM,
+      timeInSecForIosWeb: 2,
+      backgroundColor: Theme.of(context).primaryColor,
+      textColor: Colors.white,
+      fontSize: 16.0
+    );
+  }
+
+  void onDelete() {
+    widget.task.delete();
+
   }
 
   @override
@@ -31,7 +56,7 @@ class _TaskInfoPageState extends State<TaskInfoPage> {
       child: Column(
         children: <Widget>[
           buildTextField(
-            controller: titleController, 
+            controller: _titleController, 
             hint: 'Title',
             hintStyle: Theme.of(context).textTheme.subtitle1!.copyWith(
               color: Colors.grey,
@@ -40,7 +65,7 @@ class _TaskInfoPageState extends State<TaskInfoPage> {
             maxLines: 1,
           ),
           buildTextField(
-            controller: descriptionController, 
+            controller: _descriptionController, 
             hint: 'Description',
             hintStyle: Theme.of(context).textTheme.bodyText1!.copyWith(
               fontWeight: FontWeight.w500,
@@ -55,9 +80,9 @@ class _TaskInfoPageState extends State<TaskInfoPage> {
       ),
     ),
     floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {},
-        icon: const Icon(Icons.done_rounded),
-        label: const Text('Mark as Done')
+        onPressed: onSave,
+        icon: const Icon(Icons.edit_rounded),
+        label: const Text('Save')
       ),
     );
   }
@@ -73,6 +98,12 @@ class _TaskInfoPageState extends State<TaskInfoPage> {
         style: Theme.of(context).textTheme.subtitle1,
       ),
       centerTitle: true,
+      actions: [
+        IconButton(
+          onPressed: onDelete, 
+          icon: const Icon(Icons.delete_rounded),
+        ),
+      ],
     );
   }
   
