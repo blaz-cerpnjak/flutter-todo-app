@@ -3,14 +3,14 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:todo_app/pages/home_page.dart';
 import '../models/task_model.dart';
 
-class AddTodoPage extends StatefulWidget {
-  const AddTodoPage({Key? key}) : super(key: key);
+class AddTaskPage extends StatefulWidget {
+  const AddTaskPage({Key? key}) : super(key: key);
 
   @override
-  State<AddTodoPage> createState() => _AddTodoPageState();
+  State<AddTaskPage> createState() => _AddTaskPageState();
 }
 
-class _AddTodoPageState extends State<AddTodoPage> {
+class _AddTaskPageState extends State<AddTaskPage> {
   final titleController = TextEditingController();
   final descriptionController = TextEditingController();
 
@@ -29,7 +29,7 @@ class _AddTodoPageState extends State<AddTodoPage> {
   @override
   Widget build(BuildContext context) => Scaffold(
     appBar: AppBar(
-      title: Text('Add Task'),
+      title: const Text('Add Task'),
     ),
     body: Padding(
       padding: const EdgeInsets.all(10),
@@ -37,7 +37,7 @@ class _AddTodoPageState extends State<AddTodoPage> {
         children: <Widget>[
           TextFormField(
             controller: titleController,
-            style: TextStyle(fontSize: 20),
+            style: const TextStyle(fontSize: 20),
             decoration: const InputDecoration(
               border: InputBorder.none,
               labelText: 'Title',
@@ -61,7 +61,7 @@ class _AddTodoPageState extends State<AddTodoPage> {
             onPressed: () => {
               addTodoItem(context),
             },
-            child: Text('Insert'),
+            child: const Text('Insert'),
           )
         ]
       ),

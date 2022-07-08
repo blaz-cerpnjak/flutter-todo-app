@@ -53,27 +53,19 @@ class _HistoryPageState extends State<HistoryPage> {
       title: Text('History'),
     ),
     body: Center(
-        child: isLoading 
-        ? CircularProgressIndicator()
-        : tasks.isEmpty
-          ? const Text('No tasks.')
-          : buildAnimatedTaskList(tasks),
-      ),
-    floatingActionButton: FloatingActionButton(
-        onPressed: () => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => AddTodoPage()),
-            ),
-        tooltip: 'Add Todo',
-        child: const Icon(Icons.add),
-      ),
+      child: isLoading 
+      ? CircularProgressIndicator()
+      : tasks.isEmpty
+        ? const Text('No tasks.')
+        : buildAnimatedTaskList(tasks),
+    ),
   );
 
   Widget buildAnimatedTaskList(final tasks) => AnimatedList(
     key: listKey,
     initialItemCount: tasks.length,
     itemBuilder: (context, index, animation) => TodoItemWidget(
-      task: tasks, 
+      task: tasks[index], 
       isEditable: true, 
       animation: animation,
       onUpdate: () => () {},

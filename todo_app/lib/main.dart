@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:todo_app/models/task_model.dart';
 import 'package:todo_app/pages/home_page.dart';
+import 'package:todo_app/pages/main_page.dart';
 
 late Box box;
 
@@ -24,7 +25,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const HomePage(),
+      home: const MainPage(),
     );
   }
 }

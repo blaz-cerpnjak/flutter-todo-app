@@ -74,7 +74,7 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) => Scaffold(
     appBar: AppBar(
-      title: Text('Home'),
+      title: const Text('Home'),
       actions: [
         IconButton(
           onPressed: () => {
@@ -93,14 +93,6 @@ class _HomePageState extends State<HomePage> {
         : tasks.isEmpty
           ? const Text('No tasks.')
           : buildAnimatedTodoList(tasks),
-      ),
-    floatingActionButton: FloatingActionButton(
-        onPressed: () => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => AddTodoPage()),
-            ),
-        tooltip: 'Add Task',
-        child: const Icon(Icons.add),
       ),
   );
 
