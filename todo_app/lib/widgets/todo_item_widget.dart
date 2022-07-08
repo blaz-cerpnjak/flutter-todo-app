@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:todo_app/model/todo.dart';
+import 'package:todo_app/models/task_model.dart';
+import 'package:date_format/date_format.dart';
 
 class TodoItemWidget extends StatefulWidget {
-  final Todo todo;
+  final Task task;
   bool isChecked = false;
   final bool isEditable;
   final Function onUpdate;
@@ -10,7 +11,7 @@ class TodoItemWidget extends StatefulWidget {
   final Animation<double> animation;
 
   TodoItemWidget({
-    required this.todo, 
+    required this.task, 
     required this.isEditable,
     required this.animation,
     required this.onUpdate, 
@@ -25,7 +26,7 @@ class _TodoItemWidgetState extends State<TodoItemWidget> {
 
   @override
   void initState() {
-    widget.isChecked = widget.todo.isCompleted;
+    widget.isChecked = widget.task.completed;
     super.initState();
   }
 
@@ -62,14 +63,14 @@ class _TodoItemWidgetState extends State<TodoItemWidget> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  widget.todo.text,
+                  widget.task.title,
                   style: const TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 16,
                   ),
                 ),
                 const SizedBox(height: 5),
-                Text(widget.todo.formattedInputDate),
+                Text(formatDate(widget.task.created, [dd, '-', mm, '-', yyyy])),
               ],
             )
           ),

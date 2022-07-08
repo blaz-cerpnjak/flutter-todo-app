@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/src/foundation/key.dart';
 import 'package:flutter/src/widgets/framework.dart';
-import 'package:todo_app/db/local/todos_database.dart';
-import 'package:todo_app/model/todo.dart';
-import 'package:todo_app/page/add_todo_page.dart';
-import 'package:todo_app/widget/todo_item_widget.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import 'package:todo_app/models/task_model.dart';
+import 'package:todo_app/pages/add_task_page.dart';
+import 'package:todo_app/widgets/todo_item_widget.dart';
 
 class HistoryPage extends StatefulWidget {
   const HistoryPage({Key? key}) : super(key: key);
@@ -14,38 +14,36 @@ class HistoryPage extends StatefulWidget {
 }
 
 class _HistoryPageState extends State<HistoryPage> {
-  late List<Todo> todoList;
+  late List<Task> tasks;
   final listKey = GlobalKey<AnimatedListState>();
   bool isLoading = false;
 
   @override
   void initState() {
     super.initState();
-    setTodoList();
+    setTasks();
   }
 
-  Future setTodoList() async {
+  Future<void> setTasks() async {
     setState(() => isLoading = true);
-    todoList = await TodosDatabase.instance.readCompletedTodos();
-    debugPrint(todoList.length.toString());
+    tasks = Hive.box<Task>("tasks").values.toList().cast<Task>();
     setState(() => isLoading = false);
   }
 
   void onDelete(int position) async {
-    final Todo todo = todoList[position];
-    TodosDatabase.instance.delete(todo.id!);
-    //setState(() => todoList.removeAt(position));
-    todoList.removeAt(position);
+    final task = tasks[position];
+    task.delete();
+    tasks.removeAt(position);
     listKey.currentState!.removeItem(
       position, 
       (context, animation) => TodoItemWidget(
-          todo: todo, 
+          task: task,
           isEditable: false,
           animation: animation, 
           onUpdate: () {}, 
           onDelete: () {},
       ),
-      duration: Duration(milliseconds: 200),
+      duration: const Duration(milliseconds: 200),
     );
   }
 
@@ -57,9 +55,9 @@ class _HistoryPageState extends State<HistoryPage> {
     body: Center(
         child: isLoading 
         ? CircularProgressIndicator()
-        : todoList.isEmpty
-          ? Text('No todo items.')
-          : buildAnimatedTodoList(),
+        : tasks.isEmpty
+          ? const Text('No tasks.')
+          : buildAnimatedTaskList(tasks),
       ),
     floatingActionButton: FloatingActionButton(
         onPressed: () => Navigator.push(
@@ -71,15 +69,15 @@ class _HistoryPageState extends State<HistoryPage> {
       ),
   );
 
-  Widget buildAnimatedTodoList() => AnimatedList(
+  Widget buildAnimatedTaskList(final tasks) => AnimatedList(
     key: listKey,
-    initialItemCount: todoList.length,
+    initialItemCount: tasks.length,
     itemBuilder: (context, index, animation) => TodoItemWidget(
-      todo: todoList[index], 
+      task: tasks, 
       isEditable: true, 
       animation: animation,
       onUpdate: () => () {},
-      onDelete: () => () {},
+      onDelete: () => onDelete(index),
     ),
   );
 }
