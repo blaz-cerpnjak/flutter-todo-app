@@ -47,7 +47,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     return formatDate(task.created, [MM, '-', yyyy]) == formatDate(DateTime.now(), [MM, '-', yyyy]);
   }
 
-  void setTodoList(int index) {
+  void setTodoList(int index) async {
     setState(() => _isLoading = true);
     _tasks = Hive.box<Task>("tasks").values.toList().cast<Task>();
 
@@ -76,18 +76,15 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    //TabController tabController = TabController(length: 3, initialIndex: 0, vsync: this);
-
     return Scaffold(
       backgroundColor: Theme.of(context).backgroundColor,
       appBar: buildAppBar(),
-      body: _isLoading ? const Center(child: CircularProgressIndicator())
-        : Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              buildContent(_tabController),
-            ],
-          )
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          buildContent(_tabController),
+        ],
+      ),
     );
   }
 
@@ -166,7 +163,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   );
 
   Widget buildTodoList(final tasks) {
-    return tasks.length > 0 ?
+    return _isLoading ? const Center(child: CircularProgressIndicator())
+    : tasks.length > 0 ?
       ValueListenableBuilder(
         valueListenable: Hive.box<Task>('tasks').listenable(),
         builder: (context, box, _) {
