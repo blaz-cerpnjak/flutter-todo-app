@@ -1,5 +1,7 @@
+import 'package:date_format/date_format.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:todo_app/routes/locator.dart';
 import 'package:todo_app/routes/navigation_service.dart';
 import '../models/task_model.dart';
@@ -46,6 +48,21 @@ class _TaskInfoPageState extends State<TaskInfoPage> {
     _navigationService.navigateTo('/');
   }
 
+  void openDatePicker() async {
+    DateTime? newDate = await showDatePicker(
+      context: context, 
+      initialDate: widget.task.created, 
+      firstDate: DateTime(2000), 
+      lastDate: DateTime(3000),
+    );
+    if (newDate != null) {
+      setState(() {
+        widget.task.created = newDate;
+        widget.task.save();
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -54,7 +71,19 @@ class _TaskInfoPageState extends State<TaskInfoPage> {
       body: Padding(
       padding: const EdgeInsets.all(10),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
+          InkWell(
+            onTap: openDatePicker,
+            child: Text(
+              formatDate(widget.task.created, [dd, '-', mm, '-', yyyy]),
+              style: Theme.of(context).textTheme.bodySmall!.copyWith(
+                fontFamily: GoogleFonts.firaSans().fontFamily,
+                color: Colors.grey,
+              ),
+            ),
+          ),
+          const Divider(color: Colors.grey),
           buildTextField(
             controller: _titleController, 
             hint: 'Title',

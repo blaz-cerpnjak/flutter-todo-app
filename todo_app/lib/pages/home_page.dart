@@ -82,12 +82,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       backgroundColor: Theme.of(context).backgroundColor,
       appBar: buildAppBar(),
       body: _isLoading ? const Center(child: CircularProgressIndicator())
-        : _tasks.isEmpty
-          ? Text(
-              'No tasks.',
-              style: Theme.of(context).textTheme.subtitle2,
-            )
-          : Column(
+        : Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               buildContent(_tabController),
@@ -170,19 +165,30 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     ),
   );
 
-  Widget buildTodoList(final tasks) => ValueListenableBuilder(
-    valueListenable: Hive.box<Task>('tasks').listenable(),
-    builder: (context, box, _) {
-      return ListView.builder(
-        shrinkWrap: true,
-        itemCount: tasks.length,
-        itemBuilder: (context, index) => TodoItemWidget(
-          task: tasks[index],
-          isEditable: true, 
-          onUpdate: () => onChecked(index),
-          onTap: () => _navigationService.navigateTo('/taskInfo', arguments: tasks[index]),
-        )
-      );
-    }
-  );
+  Widget buildTodoList(final tasks) {
+    return tasks.length > 0 ?
+      ValueListenableBuilder(
+        valueListenable: Hive.box<Task>('tasks').listenable(),
+        builder: (context, box, _) {
+          return ListView.builder(
+            shrinkWrap: true,
+            itemCount: tasks.length,
+            itemBuilder: (context, index) => TodoItemWidget(
+              task: tasks[index],
+              isEditable: true, 
+              onUpdate: () => onChecked(index),
+              onTap: () => _navigationService.navigateTo('/taskInfo', arguments: tasks[index]),
+            )
+          );
+        }
+      )
+    : Text(
+      "No tasks.",
+      style: Theme.of(context).textTheme.bodyText1!.copyWith(
+        color: Colors.grey,
+        fontSize: 14,
+        fontWeight: FontWeight.w400
+      )
+    );
+  }
 }
