@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:todo_app/models/task_model.dart';
 import 'package:todo_app/widgets/todo_item_widget.dart';
+import '../routes/locator.dart';
+import '../routes/navigation_service.dart';
 
 class HistoryPage extends StatefulWidget {
   const HistoryPage({Key? key}) : super(key: key);
@@ -11,9 +13,10 @@ class HistoryPage extends StatefulWidget {
 }
 
 class _HistoryPageState extends State<HistoryPage> {
-  late List<Task> tasks;
-  final listKey = GlobalKey<AnimatedListState>();
-  bool isLoading = false;
+  final _navigationService = locator<NavigationService>();
+  late List<Task> _tasks;
+  final _listKey = GlobalKey<AnimatedListState>();
+  bool _isLoading = false;
 
   @override
   void initState() {
@@ -22,17 +25,17 @@ class _HistoryPageState extends State<HistoryPage> {
   }
 
   Future<void> setTasks() async {
-    setState(() => isLoading = true);
-    tasks = Hive.box<Task>("tasks").values.toList().cast<Task>();
-    tasks.retainWhere((task) => task.completed);
-    setState(() => isLoading = false);
+    setState(() => _isLoading = true);
+    _tasks = Hive.box<Task>("tasks").values.toList().cast<Task>();
+    _tasks.retainWhere((task) => task.isCompleted);
+    setState(() => _isLoading = false);
   }
 
   void onDelete(int position) async {
-    final task = tasks[position];
+    final task = _tasks[position];
     task.delete();
-    tasks.removeAt(position);
-    listKey.currentState!.removeItem(
+    _tasks.removeAt(position);
+    _listKey.currentState!.removeItem(
       position, 
       (context, animation) => TodoItemWidget(
           task: task,
@@ -49,11 +52,11 @@ class _HistoryPageState extends State<HistoryPage> {
     backgroundColor: Theme.of(context).backgroundColor,
     appBar: buildAppBar(),
     body: Center(
-      child: isLoading 
+      child: _isLoading 
       ? const CircularProgressIndicator()
-      : tasks.isEmpty
+      : _tasks.isEmpty
         ? const Text('No tasks.')
-        : buildAnimatedTaskList(tasks),
+        : buildAnimatedTaskList(_tasks),
     ),
   );
 
@@ -72,13 +75,13 @@ class _HistoryPageState extends State<HistoryPage> {
   }
 
   Widget buildAnimatedTaskList(final tasks) => ListView.builder(
-    key: listKey,
+    key: _listKey,
     itemCount: tasks.length,
     itemBuilder: (context, index) => TodoItemWidget(
       task: tasks[index], 
       isEditable: true,
       onUpdate: () => () {},
-      onTap: () => () {},
+      onTap: () => _navigationService.navigateTo('/taskInfo', arguments: tasks[index]),
     ),
   );
 }

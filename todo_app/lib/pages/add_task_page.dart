@@ -18,7 +18,7 @@ class _AddTaskPageState extends State<AddTaskPage> {
     final task = Task(
       title: titleController.text,
       description: descriptionController.text,
-      created: DateTime.now()
+      inputDate: DateTime.now()
     );
 
     Box<Task> tasksBox = Hive.box<Task>('tasks');

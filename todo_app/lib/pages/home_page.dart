@@ -36,15 +36,15 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   }
 
   bool isToday(Task task) {
-    return formatDate(task.created, [dd, '-', MM, '-', yyyy]) == formatDate(DateTime.now(), [dd, '-', MM, '-', yyyy]);
+    return formatDate(task.inputDate, [dd, '-', MM, '-', yyyy]) == formatDate(DateTime.now(), [dd, '-', MM, '-', yyyy]);
   }
 
   bool isThisWeek(Task task) {
-    return task.created.weekOfYear == DateTime.now().weekOfYear;
+    return task.inputDate.weekOfYear == DateTime.now().weekOfYear;
   }
 
   bool isThisMonth(Task task) {
-    return formatDate(task.created, [MM, '-', yyyy]) == formatDate(DateTime.now(), [MM, '-', yyyy]);
+    return formatDate(task.inputDate, [MM, '-', yyyy]) == formatDate(DateTime.now(), [MM, '-', yyyy]);
   }
 
   void setTodoList(int index) async {
@@ -58,7 +58,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     }
 
     _tasks.sort((a, b) { 
-      if (b.completed) {
+      if (b.isCompleted) {
         return 1;
       } else {
         return -1;
@@ -70,7 +70,12 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
   void onChecked(int position) {
     final task = _tasks[position];
-    task.completed = !task.completed;
+    task.isCompleted = !task.isCompleted;
+    if (task.isCompleted) {
+      task.completedDate = DateTime.now();
+    } else {
+      task.completedDate = null;
+    }
     task.save();
   }
 

@@ -24,7 +24,7 @@ class _TodoItemWidgetState extends State<TodoItemWidget> {
 
   @override
   void initState() {
-    widget.isChecked = widget.task.completed;
+    widget.isChecked = widget.task.isCompleted;
     super.initState();
   }
 
@@ -52,14 +52,14 @@ class _TodoItemWidgetState extends State<TodoItemWidget> {
             width: 20,
             height: 20,
             decoration: BoxDecoration(
-              color: widget.task.completed ? Colors.blue : Colors.transparent,
+              color: widget.task.isCompleted ? Colors.blue : Colors.transparent,
               borderRadius: BorderRadius.circular(6),
-              border: widget.task.completed ? null : Border.all(
+              border: widget.task.isCompleted ? null : Border.all(
                 color: Colors.grey,
                 width: 1.5
               )
             ),
-            child: widget.task.completed 
+            child: widget.task.isCompleted 
               ? const Icon(Icons.check_rounded, color: Colors.white, size: 12)
               : null,
           ),
@@ -71,8 +71,8 @@ class _TodoItemWidgetState extends State<TodoItemWidget> {
             child: Text(
               widget.task.title,
               style: TextStyle(
-                color: widget.task.completed ? Theme.of(context).primaryColor : Colors.grey,
-                fontWeight: widget.task.completed ? FontWeight.w600 : FontWeight.w400,
+                color: widget.task.isCompleted ? Theme.of(context).primaryColor : Colors.grey,
+                fontWeight: widget.task.isCompleted ? FontWeight.w600 : FontWeight.w400,
               ),
             ),
           ),

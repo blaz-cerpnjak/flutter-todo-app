@@ -51,13 +51,13 @@ class _TaskInfoPageState extends State<TaskInfoPage> {
   void openDatePicker() async {
     DateTime? newDate = await showDatePicker(
       context: context, 
-      initialDate: widget.task.created, 
+      initialDate: widget.task.inputDate, 
       firstDate: DateTime(2000), 
       lastDate: DateTime(3000),
     );
     if (newDate != null) {
       setState(() {
-        widget.task.created = newDate;
+        widget.task.inputDate = newDate;
         widget.task.save();
       });
     }
@@ -76,7 +76,7 @@ class _TaskInfoPageState extends State<TaskInfoPage> {
           InkWell(
             onTap: openDatePicker,
             child: Text(
-              formatDate(widget.task.created, [dd, '-', mm, '-', yyyy]),
+              formatDate(widget.task.inputDate, [dd, '.', mm, '.', yyyy]),
               style: Theme.of(context).textTheme.bodySmall!.copyWith(
                 fontFamily: GoogleFonts.firaSans().fontFamily,
                 color: Colors.grey,
@@ -84,6 +84,14 @@ class _TaskInfoPageState extends State<TaskInfoPage> {
             ),
           ),
           const Divider(color: Colors.grey),
+          widget.task.completedDate != null ?
+            Text(
+              "Completed on ${formatDate(widget.task.completedDate!, [dd, '.', mm, '.', yyyy])}",
+              style: Theme.of(context).textTheme.bodySmall!.copyWith(
+                fontFamily: GoogleFonts.firaSans().fontFamily,
+                color: Colors.grey,
+              ),
+            ) : Text(''),
           buildTextField(
             controller: _titleController, 
             hint: 'Title',

@@ -11,15 +11,18 @@ class Task extends HiveObject {
   String description;
 
   @HiveField(2)
-  DateTime created;
+  DateTime inputDate;
 
   @HiveField(3)
-  bool completed; 
+  bool isCompleted;
+
+  @HiveField(4)
+  DateTime? completedDate; 
 
   Task({
     required this.title,
     required this.description,
-    required this.created,
-    this.completed = false,
+    required this.inputDate,
+    this.isCompleted = false,
   });
 }
