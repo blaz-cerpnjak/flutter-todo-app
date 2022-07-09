@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/src/foundation/key.dart';
-import 'package:flutter/src/widgets/framework.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:todo_app/models/task_model.dart';
-import 'package:todo_app/pages/add_task_page.dart';
 import 'package:todo_app/widgets/todo_item_widget.dart';
 
 class HistoryPage extends StatefulWidget {
@@ -40,7 +37,6 @@ class _HistoryPageState extends State<HistoryPage> {
       (context, animation) => TodoItemWidget(
           task: task,
           isEditable: false,
-          animation: animation, 
           onUpdate: () {}, 
           onTap: () {},
       ),
@@ -75,13 +71,12 @@ class _HistoryPageState extends State<HistoryPage> {
     );
   }
 
-  Widget buildAnimatedTaskList(final tasks) => AnimatedList(
+  Widget buildAnimatedTaskList(final tasks) => ListView.builder(
     key: listKey,
-    initialItemCount: tasks.length,
-    itemBuilder: (context, index, animation) => TodoItemWidget(
+    itemCount: tasks.length,
+    itemBuilder: (context, index) => TodoItemWidget(
       task: tasks[index], 
-      isEditable: true, 
-      animation: animation,
+      isEditable: true,
       onUpdate: () => () {},
       onTap: () => () {},
     ),

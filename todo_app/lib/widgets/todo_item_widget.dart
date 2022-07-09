@@ -8,12 +8,10 @@ class TodoItemWidget extends StatefulWidget {
   final bool isEditable;
   final Function onUpdate;
   final Function() onTap;
-  final Animation<double> animation;
 
   TodoItemWidget({
     required this.task, 
     required this.isEditable,
-    required this.animation,
     required this.onUpdate, 
     required this.onTap,
     Key? key}) : super(key: key);
@@ -40,10 +38,9 @@ class _TodoItemWidgetState extends State<TodoItemWidget> {
   }
 
   @override
-  Widget build(BuildContext context) => SizeTransition(
-    sizeFactor: widget.animation,
-    child: buildItem(),
-  );
+  Widget build(BuildContext context) { 
+    return buildItem();
+  }
   
   Widget buildItem() => Padding(
     padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
