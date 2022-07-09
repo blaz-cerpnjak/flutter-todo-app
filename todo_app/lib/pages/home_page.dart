@@ -19,15 +19,20 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   final _navigationService = locator<NavigationService>();
-  late List<Task> tasks;
-  bool isLoading = false;
+  late List<Task> _tasks;
+  bool _isLoading = false;
   bool _isDark = false;
+  late TabController _tabController;
 
   @override
   void initState() {
     super.initState();
-    setTodoList(0);
     _isDark = context.read<ThemeManager>().themeMode == ThemeMode.dark;
+    _tabController = TabController(length: 3, initialIndex: 0, vsync: this);
+    setTodoList(0);
+    _tabController.addListener(() {
+      setTodoList(_tabController.index);
+    });
   }
 
   bool isToday(Task task) {
@@ -42,41 +47,42 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     return formatDate(task.created, [MM, '-', yyyy]) == formatDate(DateTime.now(), [MM, '-', yyyy]);
   }
 
-  Future setTodoList(int index) async {
-    setState(() => isLoading = true);
-    tasks = await Hive.box<Task>("tasks").values.toList().cast<Task>();
+  void setTodoList(int index) {
+    setState(() => _isLoading = true);
+    _tasks = Hive.box<Task>("tasks").values.toList().cast<Task>();
 
     switch (index) {
-      case 0: tasks.retainWhere((task) => isToday(task)); break;
-      case 1: tasks.retainWhere((task) => isThisWeek(task)); break;
-      case 2: tasks.retainWhere((task) => isThisMonth(task)); break;
+      case 0: _tasks.retainWhere((task) => isToday(task)); break;
+      case 1: _tasks.retainWhere((task) => isThisWeek(task)); break;
+      case 2: _tasks.retainWhere((task) => isThisMonth(task)); break;
     }
 
-    tasks.sort((a, b) { 
+    _tasks.sort((a, b) { 
       if (b.completed) {
         return 1;
       } else {
         return -1;
       } 
     });
-    setState(() => isLoading = false);
+    print(_tasks);
+    setState(() => _isLoading = false);
   }
 
   void onChecked(int position) {
-    final task = tasks[position];
+    final task = _tasks[position];
     task.completed = !task.completed;
     task.save();
   }
 
   @override
   Widget build(BuildContext context) {
-    final tabController = TabController(length: 3, vsync: this);
+    //TabController tabController = TabController(length: 3, initialIndex: 0, vsync: this);
 
     return Scaffold(
       backgroundColor: Theme.of(context).backgroundColor,
       appBar: buildAppBar(),
-      body: isLoading ? const Center(child: CircularProgressIndicator())
-        : tasks.isEmpty
+      body: _isLoading ? const Center(child: CircularProgressIndicator())
+        : _tasks.isEmpty
           ? Text(
               'No tasks.',
               style: Theme.of(context).textTheme.subtitle2,
@@ -84,8 +90,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           : Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              buildContent(tabController),
-              //buildAnimatedTodoList(tasks),
+              buildContent(_tabController),
             ],
           )
     );
@@ -145,7 +150,6 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
             Tab(text: 'Week'),
             Tab(text: 'Month'),
           ],
-          onTap: (index) => setTodoList,
         ),
         Padding(
           padding: const EdgeInsets.only(top: 20),
@@ -155,9 +159,9 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
             child: TabBarView(
               controller: tabController,
               children: [
-                buildTodoList(tasks),
-                buildTodoList(tasks),
-                buildTodoList(tasks),
+                buildTodoList(_tasks),
+                buildTodoList(_tasks),
+                buildTodoList(_tasks),
               ]
             ),
           ),
