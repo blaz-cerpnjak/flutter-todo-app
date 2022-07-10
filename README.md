@@ -1,6 +1,6 @@
-# TodoApp
+# Flutter Todo App
 
-Simple Todo App made using Flutter & Dart.
+Cool Todo App made using Flutter & Dart.
 
 &nbsp;&nbsp;&nbsp;&nbsp;
 
